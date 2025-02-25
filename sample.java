@@ -44,6 +44,82 @@ public class NestedIterator implements Iterator<Integer> {
     }
 }
 
+
+class LRUCache {
+    Map<Integer, ListNode> m = null;
+    ListNode head=null;
+    ListNode tail=null;
+    int capacity=0;
+    int nodes=0;
+    class ListNode {
+        int key, val;
+        ListNode left;
+        ListNode right;
+        public ListNode(int key, int val) {
+            this.key =key;
+            this.val=val;
+            left=null;
+            right=null;
+        }
+    }
+    public LRUCache(int capacity) {
+       m = new HashMap<Integer, ListNode>();
+       this.capacity = capacity;
+       head = new ListNode(-1, -1);
+       tail = new ListNode(-1, -1);
+       head.right = tail;
+       tail.left=head;
+    }
+    public int get(int key) {
+        if (m.containsKey(key)) {
+            ListNode l = m.get(key);
+            removenode(l);
+            addtohead(l);
+            return l.val;
+        } 
+        return -1;
+    }
+    public void put(int key, int value) {
+        if (m.containsKey(key)) {
+            ListNode l = m.get(key);
+            removenode(l);
+            l = new ListNode(key, value);
+            m.put(key, l);
+            addtohead(l);
+            return;
+        }
+        nodes++;
+        if (nodes > capacity) {
+            int tailkey= tail.left.key;
+            ListNode l = m.get(tail.left.key);
+            System.out.println(l.val);
+            removenode(l);
+            m.remove(tailkey);
+        }
+        
+        ListNode curr = new ListNode(key, value);
+        addtohead(curr);
+        m.put(key, curr);
+    }
+    private void addtohead(ListNode curr) {
+        curr.right = head.right;
+        curr.right.left = curr;
+        curr.left=head;
+        head.right=curr;
+    }
+    private void removenode(ListNode curr) {
+        curr.left.right = curr.right;
+        curr.right.left = curr.left;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
+
 /**
  * Your NestedIterator object will be instantiated and called as such:
  * NestedIterator i = new NestedIterator(nestedList);
